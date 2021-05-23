@@ -1,9 +1,11 @@
+from datetime import datetime
 import logging.config
 from random import random
 from time import sleep
 from typing import List
 import uuid
 
+import boto3
 from bs4 import BeautifulSoup, element
 import pandas as pd
 import requests
@@ -19,11 +21,16 @@ class ScrapeStats(object):
     scraper_url = \
         "https://www.basketball-reference.com/leagues/NBA_2021_totals.html"
 
-    def __init__(self):
+    def __init__(self, local_mode: bool = True):
+        self.local_mode = local_mode
+        self.datetime_now = datetime.now()
         self.logger = logging.getLogger(__name__ + "." + uuid_str)
         self.set_logger()
 
     def scrape_stats(self):
+        if self.local_mode is True:
+            self.set_up_local_boto_session()
+
         self.logger.info("Starting Stats Scraper")
 
         self.logger.info("Fetching HTML")
@@ -34,7 +41,11 @@ class ScrapeStats(object):
         df = self.parse_html_to_dataframe(html)
         self.logger.info("Parsed HTML to DataFrame Successfully")
 
-        print(df)
+        self.logger.info("Converting DF to Parquet File and Loading to AWS S3")
+        self.convert_to_parquet_and_load_to_s3(df)
+        self.logger.info(
+            "Converted DF to Parquet File and Loaded to AWS S3 Successfully"
+        )
 
         self.logger.info("Stats Scraper Completed Successfully")
 
@@ -48,10 +59,13 @@ class ScrapeStats(object):
 
         data_list = [self.parse_row(row) for row in rows]
 
-        return pd.DataFrame(
+        df = pd.DataFrame(
             data=data_list,
             columns=header_row
         )
+        df["Datetime_Pulled"] = self.datetime_now.isoformat()
+
+        return df
 
     def fetch_html(self) -> str:
         response = None
@@ -73,6 +87,15 @@ class ScrapeStats(object):
 
         return response.text
 
+    def convert_to_parquet_and_load_to_s3(self, df: pd.DataFrame):
+        path = "s3://nba-project-1233123494218913/" \
+               f"{self.datetime_now.strftime('%Y')}/" \
+               f"{self.datetime_now.strftime('%m')}/" \
+               f"{self.datetime_now.strftime('%d')}/" \
+               f"data-{self.datetime_now.isoformat()}.parquet"
+
+        df.to_parquet(path=path)
+
     @staticmethod
     def parse_row(row: element.Tag) -> List:
         return [row_tag.get_text() for row_tag in row.find_all("td")]
@@ -80,3 +103,7 @@ class ScrapeStats(object):
     @staticmethod
     def set_logger():
         logging.config.dictConfig(config["logging_dict"])
+
+    @staticmethod
+    def set_up_local_boto_session():
+        boto3.setup_default_session(profile_name="jack-development")

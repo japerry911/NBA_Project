@@ -2,7 +2,7 @@ from scrape_stats import ScrapeStats
 
 
 def main():
-    ScrapeStats().scrape_stats()
+    ScrapeStats(local_mode=True).scrape_stats()
 
 
 if __name__ == "__main__":
