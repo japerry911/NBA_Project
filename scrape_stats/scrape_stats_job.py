@@ -11,7 +11,7 @@ import pandas as pd
 import requests
 
 from scrape_stats.configs.config import config
-from scrape_stats.exceptions import ExponentialBackoffFailed
+from exceptions import ExponentialBackoffFailed
 
 
 uuid_str = str(uuid.uuid4()).upper()
@@ -103,6 +103,8 @@ class ScrapeStats(object):
 
     def fetch_html(self) -> str:
         """Fetches the HTML from Basketball-Reference.com
+        :raises:
+            ExponentialBackoffFailed: if the Exponential Backoff fails
         :return: HTML string of HTML text
         :rtype: string
         """
