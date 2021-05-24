@@ -16,11 +16,11 @@ class PostgreSQLEngine(object):
         connection: the Psycopg2 PostgreSQL Connection
     """
     def __init__(self):
-        self.dbname = get_environment_variable("DBNAME")
-        self.user = get_environment_variable("USER")
-        self.password = get_environment_variable("PASSWORD")
-        self.host = get_environment_variable("HOST")
-        self.port = get_environment_variable("PORT")
+        self.dbname = get_environment_variable("DB_NAME")
+        self.user = get_environment_variable("DB_USER")
+        self.password = get_environment_variable("DB_PASSWORD")
+        self.host = get_environment_variable("DB_HOST")
+        self.port = get_environment_variable("DB_PORT")
         self.connection = self.create_connection()
 
     def create_connection(self) -> extensions.connection:
@@ -41,7 +41,19 @@ class PostgreSQLEngine(object):
 
         try:
             cur.execute(
-                f"""INSERT INTO {table} 
+                f"""INSERT INTO "{table}" 
+                    ("playerName", "position", "age", "team", "gamesPlayed",
+                    "gamesStarted", "minutesPlayed", "fieldGoals", 
+                    "fieldGoalAttempts", "fieldGoalPercentage", 
+                    "threePointFieldGoals", "threePointFieldGoalAttempts",
+                    "threePointFieldGoalPercentage", "twoPointFieldGoals",
+                    "twoPointFieldGoalAttempts", "twoPointFieldGoalPercentage",
+                    "effectiveFieldGoalPercentage", "freeThrows", 
+                    "freeThrowAttempts", "freeThrowPercentage", 
+                    "offensiveRebounds", "defensiveRebounds", "totalRebounds",
+                    "assists", "steals", "blocks", "turnovers", 
+                    "personalFouls", "points", "datetimePulled"
+                    )
                     VALUES (
                     {",".join(["%s" for _ in range(len(row))])}
                     )

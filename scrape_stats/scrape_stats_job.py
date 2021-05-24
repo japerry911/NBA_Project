@@ -7,6 +7,7 @@ import uuid
 
 import boto3
 from bs4 import BeautifulSoup, element
+import numpy as np
 import pandas as pd
 import requests
 
@@ -98,6 +99,14 @@ class ScrapeStats(object):
             columns=header_row
         )
         df["Datetime_Pulled"] = self.datetime_now.isoformat()
+        df[["Age", "G", "GS", "MP", "FG", "FGA", "3P", "3PA", "3P%", "2P",
+            "2PA", "2P%", "FT", "FTA", "FT%", "ORB", "DRB", "TRB", "AST",
+            "STL", "BLK", "TOV", "PF", "PTS"]] = df[
+            ["Age", "G", "GS", "MP", "FG", "FGA", "3P", "3PA", "3P%", "2P",
+            "2PA", "2P%", "FT", "FTA", "FT%", "ORB", "DRB", "TRB", "AST",
+            "STL", "BLK", "TOV", "PF", "PTS"]
+        ].apply(pd.to_numeric)
+        df = df.replace(r'^\s*$', np.nan, regex=True)
 
         return df
 
