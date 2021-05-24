@@ -8,4 +8,4 @@ class LoadData(object):
         pass
 
     def load_data(self):
-        test = PostgreSQLEngine
+        pass

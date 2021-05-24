@@ -2,15 +2,11 @@ from typing import List
 
 from psycopg2 import connect, extensions
 
+from utils.get_environment_variable import get_environment_variable
+
 
 class PostgreSQLEngine(object):
     """PostgreSQL Psycopg2 Engine
-    Parameters:
-        dbname: database name
-        user: database username
-        password: database password
-        host: database hostname
-        port: database port, defaults to 5432
     Attributes:
         dbname: database name
         user: database username
@@ -19,19 +15,12 @@ class PostgreSQLEngine(object):
         port: database port, defaults to 5432
         connection: the Psycopg2 PostgreSQL Connection
     """
-    def __init__(
-            self,
-            dbname: str,
-            user: str,
-            password: str,
-            host: str,
-            port: int = 5432
-    ):
-        self.dbname = dbname
-        self.user = user
-        self.password = password
-        self.host = host
-        self.port = port
+    def __init__(self):
+        self.dbname = get_environment_variable("DBNAME")
+        self.user = get_environment_variable("USER")
+        self.password = get_environment_variable("PASSWORD")
+        self.host = get_environment_variable("HOST")
+        self.port = get_environment_variable("PORT")
         self.connection = self.create_connection()
 
     def create_connection(self) -> extensions.connection:
