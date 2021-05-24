@@ -1,4 +1,4 @@
-from scrape_stats import ScrapeStats
+from scrape_stats.scrape_stats_job import ScrapeStats
 
 
 def main():

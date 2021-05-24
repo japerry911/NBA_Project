@@ -10,8 +10,8 @@ from bs4 import BeautifulSoup, element
 import pandas as pd
 import requests
 
-from configs.config import config
-from exceptions import ExponentialBackoffFailed
+from scrape_stats.configs.config import config
+from scrape_stats.exceptions import ExponentialBackoffFailed
 
 
 uuid_str = str(uuid.uuid4()).upper()
