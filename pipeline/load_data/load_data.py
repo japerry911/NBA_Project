@@ -1,6 +1,6 @@
 import logging.config
 
-from utils.get_environment_variable import get_environment_variable
+from utils.postgresql import PostgreSQLEngine
 
 
 class LoadData(object):
@@ -8,4 +8,16 @@ class LoadData(object):
         pass
 
     def load_data(self):
-        pass
+        host = "batyr.db.elephantsql.com"
+        user = "owtiurxu"
+        dbname = "owtiurxu"
+        password = "QCoCzveGAH8lXLFYQIixt6B_argF6_V2"
+
+        a = PostgreSQLEngine(
+            dbname, user, password, host
+        )
+
+        print(a.connection)
+        print(type(a.connection))
+
+        a.connection.close()
