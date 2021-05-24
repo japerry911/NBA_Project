@@ -1,3 +1,5 @@
+from typing import List
+
 from psycopg2 import connect, extensions
 
 
@@ -44,3 +46,18 @@ class PostgreSQLEngine(object):
             host=self.host,
             port=self.port
         )
+
+    def insert_row_into_db(self, table: str, row: List):
+        cur = self.connection.cursor()
+
+        try:
+            cur.execute(
+                f"""INSERT INTO {table} 
+                    VALUES (
+                    {",".join(["%s" for _ in range(len(row))])}
+                    )
+                """,
+                row
+            )
+        finally:
+            cur.close()
